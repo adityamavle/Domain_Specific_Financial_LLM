@@ -4,6 +4,7 @@ import transformers
 from time import time
 #import chromadb
 #from chromadb.config import Settings
+from langchain.document_loaders import DirectoryLoader
 from langchain.llms import HuggingFacePipeline
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -12,6 +13,7 @@ from langchain.chains import RetrievalQA
 from langchain.vectorstores import Chroma
 import json
 import os
+import gc
 from pprint import pprint
 import bitsandbytes as bnb
 from transformers import (
@@ -27,7 +29,7 @@ device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
 
 """### Model Setup"""
 
-MODEL_PATH = "llama-2-7b-finrisk"
+MODEL_PATH = "adityamavle/llama-2-7b-finrisk"
 
 device_map = {"": 0}
 
@@ -65,8 +67,7 @@ def test_model(tokenizer, pipeline, prompt_to_test):
         max_length=200,)
     #time_2 = time()
     #print(f"Test inference: {round(time_2-time_1, 3)} sec.")
-    #for seq in sequences:
-     #   print(f"Result: {seq['generated_text']}")
+    #for seq in sequences:#   print(f"Result: {seq['generated_text']}")
 
 def generate_text(model_name, tokenizer, prompt):
     logging.set_verbosity(logging.CRITICAL)
@@ -97,10 +98,8 @@ locale.getpreferredencoding = lambda: "UTF-8"
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20)
 
-from langchain_community.document_loaders import DirectoryLoader
-
 # loader = loader = TextLoader("/content/rag_input.txt",encoding="utf8")
-loader = DirectoryLoader('fin_documents', glob="**/*.pdf")
+loader = DirectoryLoader('finance_data/apple', glob="**/*.pdf")
 docs = loader.load()
 print(f"{len(docs)} document(s) loaded.")
 
