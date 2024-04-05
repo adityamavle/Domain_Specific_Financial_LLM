@@ -1,6 +1,5 @@
 import streamlit as st
 import ollama
-from doc import page
 
 st.title("💬 llama2 (7B) Chatbot")
 
@@ -21,13 +20,18 @@ selected_option = st.sidebar.selectbox(
 
 # If "DocQA" is selected, provide an option to upload a document
 if selected_option == "DocQA":
-    page()
+    doc = st.sidebar.file_uploader("Upload a document for analysis", type=['pdf', 'docx', 'txt'])
+    if doc is not None:
+        st.session_state['uploaded_document'] = doc
+        st.session_state["messages"].append({"role": "assistant", "content": "Document uploaded successfully."})
+
 # Define a dictionary mapping options to models
 select_dict = {
     "Risk Analysis": 'mistral-risk',
     "Financial Sentiment Analysis": "fin-sentiment",
     "Financial NER": "mistral-NER",
-    "Financial Visual Data Analysis": "mistral:instruct"
+    "Financial Visual Data Analysis": "phi",
+    "DocQA": "phi"
 }
 
 # Check if the option has just been selected or changed, and update the session state
@@ -71,4 +75,3 @@ if prompt := st.chat_input():
     else:
         st.chat_message("assistant", avatar="🤖").write_stream(generate_response(model, stop_flag))
         st.session_state.messages.append({"role": "assistant", "content": st.session_state["full_message"]})
-

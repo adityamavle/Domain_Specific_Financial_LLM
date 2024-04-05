@@ -23,7 +23,8 @@ def generate_response(ollama_model):
 
 if prompt := st.chat_input():
     #model_list = ["fin-NER","fin-sentiment"]
-    model = "fin-sentiment"
+    # model = "mistral-NER"
+    model = "mistral-risk"
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user", avatar="🧑‍💻").write(prompt)
     st.session_state["full_message"] = ""
